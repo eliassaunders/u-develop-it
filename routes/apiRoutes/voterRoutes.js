@@ -104,4 +104,23 @@ router.delete('/voter/:id', (req, res) => {
     });
   });
 
+router.get('/votes', (req, res) => {
+    const sql = `SELECT candidates.*, parties.name AS party_name, COUNT(candidate_id) AS count
+    FROM votes
+    LEFT JOIN candidates ON votes.candidate_id = candidates.id
+    LEFT JOIN parties ON candidates.party_id = parties.id
+    GROUP BY candidate_id ORDER BY count DESC;`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            res.status(500).json({ error: res.message });
+        } else {
+        res.json({
+            message: 'Total Votes',
+            data: result
+        });
+    }
+    }) 
+})
+
 module.exports = router;
